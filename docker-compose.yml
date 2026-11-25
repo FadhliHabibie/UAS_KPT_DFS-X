@@ -1,0 +1,56 @@
+# DFS-X: 1 master + 3 data node (REST + Docker Compose)
+# Jalan: docker compose up --build
+# Master di http://localhost:5000, data node di 5001-5003.
+services:
+  master:
+    build: ./master
+    container_name: dfsx-master
+    ports:
+      - "5000:5000"
+    environment:
+      - DATANODE_URLS=http://datanode1:5001,http://datanode2:5002,http://datanode3:5003
+    volumes:
+      - master-data:/app/data
+    depends_on:
+      - datanode1
+      - datanode2
+      - datanode3
+
+  datanode1:
+    build: ./datanode
+    container_name: dfsx-datanode1
+    ports:
+      - "5001:5001"
+    environment:
+      - NODE_ID=node1
+      - PORT=5001
+    volumes:
+      - datanode1-data:/app/data
+
+  datanode2:
+    build: ./datanode
+    container_name: dfsx-datanode2
+    ports:
+      - "5002:5002"
+    environment:
+      - NODE_ID=node2
+      - PORT=5002
+    volumes:
+      - datanode2-data:/app/data
+
+  datanode3:
+    build: ./datanode
+    container_name: dfsx-datanode3
+    ports:
+      - "5003:5003"
+    environment:
+      - NODE_ID=node3
+      - PORT=5003
+    volumes:
+      - datanode3-data:/app/data
+
+volumes:
+  master-data:
+  datanode1-data:
+  datanode2-data:
+  datanode3-data:
